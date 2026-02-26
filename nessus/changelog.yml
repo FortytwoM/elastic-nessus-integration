@@ -1,3 +1,32 @@
+- version: 1.4.0
+  changes:
+    - description: "Iterate all completed/imported scans instead of only the first one."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Implement cursor state (last_seen_time) to skip unchanged scans between collection intervals."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Map Nessus severity 0 to INFO instead of LOW for correct ECS representation."
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Fix event.severity type inconsistency — use long everywhere."
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Remove non-standard vulnerability.score.environmental_score_modifier field; CVSS vector stays in nessus.cvss3_vector."
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Change SSL default to full, add proxy_url and ssl_certificate_authorities configuration options."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Add Vulnerabilities over Time trend chart, Critical/High severity metrics to dashboard."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Add event.created field populated at ingest time."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+    - description: "Add Known Limitations and Troubleshooting sections to documentation."
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
 - version: 1.3.0
   changes:
     - description: Enrich vulnerabilities with plugin details (CVE, CVSS score, description, solution, references, published date).
