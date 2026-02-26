@@ -1,0 +1,30 @@
+- version: 1.3.0
+  changes:
+    - description: Enrich vulnerabilities with plugin details (CVE, CVSS score, description, solution, references, published date).
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0
+- version: 1.2.0
+  changes:
+    - description: Add vulnerability.score.base field and fix severity to UPPERCASE to match Kibana Findings page requirements.
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+- version: 1.1.0
+  changes:
+    - description: Fix transform destination index name to match CSP third-party vulnerability pattern (remove -default suffix).
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+- version: 1.0.6
+  changes:
+    - description: Add initial cursor state; inline all config values via Handlebars for OTel agent compatibility.
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+- version: 1.0.1
+  changes:
+    - description: Fix CEL program compilation errors with slice syntax and has() macro for hyphenated map keys.
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/0
+- version: 1.0.0
+  changes:
+    - description: Initial release.
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/0

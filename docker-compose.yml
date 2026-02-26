@@ -1,0 +1,81 @@
+version: "3.8"
+
+# Local development/testing stack: Elasticsearch + Kibana + Fleet Server + Elastic Agent.
+# The Nessus integration package is uploaded manually via Kibana Fleet UI.
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: nessus-elk-es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ES_PASSWORD:-changeme}
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: >
+        curl -s -u elastic:${ES_PASSWORD:-changeme} http://localhost:9200/_cluster/health | grep -qE '"status":"(green|yellow)"'
+      interval: 15s
+      timeout: 10s
+      retries: 20
+    networks:
+      - elk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: nessus-elk-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${ES_PASSWORD:-changeme}
+      - xpack.security.enabled=true
+      - xpack.fleet.enabled=true
+      - xpack.encryptedSavedObjects.encryptionKey=something_at_least_32_characters_long!
+      - xpack.fleet.agents.fleet_server.hosts=["http://fleet-server:8220"]
+      - xpack.fleet.outputs=[{id:"default-output",name:"default",type:"elasticsearch",hosts:["http://elasticsearch:9200"],is_default:true,is_default_monitoring:true}]
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:5601/api/status | grep -q 'available'"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+    networks:
+      - elk
+
+  fleet-server:
+    image: docker.elastic.co/beats/elastic-agent:8.17.0
+    container_name: nessus-elk-fleet
+    environment:
+      - FLEET_SERVER_ENABLE=1
+      - FLEET_SERVER_ELASTICSEARCH_HOST=http://elasticsearch:9200
+      - FLEET_SERVER_SERVICE_TOKEN=${FLEET_SERVICE_TOKEN:-}
+      - FLEET_SERVER_POLICY_ID=fleet-server-policy
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ES_PASSWORD:-changeme}
+      - KIBANA_HOST=http://kibana:5601
+      - KIBANA_USERNAME=elastic
+      - KIBANA_PASSWORD=${ES_PASSWORD:-changeme}
+      - FLEET_SERVER_INSECURE_HTTP=true
+    ports:
+      - "8220:8220"
+    depends_on:
+      kibana:
+        condition: service_healthy
+    networks:
+      - elk
+
+volumes:
+  es-data:
+
+networks:
+  elk:
+    driver: bridge
